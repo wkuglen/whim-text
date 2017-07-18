@@ -66,6 +66,9 @@ void moveBy (int rows, int cols) {
 	refresh ();
 }
 
+
+//need to look up
+// fseek(), fputc(), fscanf(), fread()
 int main(int argc, char const *argv[])
 {
 	int i;

@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := test
 
 build:
-		gcc -g whim.c -o whim -lcurses
+		gcc whim.c manager.c -o whim -lcurses
 
 clean:
 		rm -rf *.dSYM

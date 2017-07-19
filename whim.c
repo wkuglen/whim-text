@@ -1,4 +1,7 @@
 #include <curses.h>
+#include <stdio.h>
+#include <strings.h>
+#include "whim.h"
 
 int r, c, nrows, ncols;
 bool replace;

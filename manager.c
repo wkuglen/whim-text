@@ -4,14 +4,18 @@ struct node* list;
 struct node* topNode;
 struct node* bottomNode;
 
+struct line* array[];
+
 void addLine (struct node*, struct line*);
 
 void init (char* filename) {
 	//do something with filename
 
 	//set up linked list
-	list = topNode = bottomNode = NULL;
+	//list = topNode = bottomNode = NULL;
 	//read line by line
+	array = malloc (2 * WIN_ROWS * sizeof(struct line*));
+
 	int lineCount = 0;
 	while (1) {
 		struct line* nextLine = malloc (sizeof (struct line));

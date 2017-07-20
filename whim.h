@@ -12,7 +12,7 @@ static int WIN_ROWS, WIN_COLS = 80;
 
 struct line
 {
-	long line_number;
+	long segment_number;
 	char* string;
 	bool dirty_bit;
 	bool has_endline;

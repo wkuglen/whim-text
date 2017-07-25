@@ -15,6 +15,7 @@ void draw (int d) {
 	move (r,c);
 	addch(d); //delch (); insch (d);
 	
+	setCharSimple (d, r, c);
 	c++;
 	if (c == ncols) {
 		c = 0;
@@ -78,6 +79,7 @@ int main(int argc, char const *argv[])
 	int d;
 	WINDOW *wnd;
 
+	initSimple (" ");
 	wnd = initscr(); //curses > init window
 	cbreak(); //curses > raw mode (chars sent to program)
 	noecho(); //curses > no echoing
@@ -127,5 +129,6 @@ int main(int argc, char const *argv[])
 	}
 
 	endwin();
+	destroySimple();
 	return 0;
 }

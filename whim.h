@@ -7,7 +7,8 @@
 #define MAX_WIN_COL 80
 #endif
 
-static int WIN_ROWS, WIN_COLS = 80;
+static int WIN_ROWS = 80;
+static int WIN_COLS = 80;
 
 
 struct line
@@ -26,4 +27,8 @@ struct node
 };
 
 // defined in manager.c
+void initSimple (char* filename);
+void setCharSimple (char, long, long);
+void destroySimple ();
+
 void init(char* filename);

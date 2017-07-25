@@ -7,6 +7,38 @@ struct node* bottomNode;
 struct line* *array;
 long maxArraySize, arraySize;
 
+
+char* arraySimple;
+long sizeSimple = 0;
+long displacedSimple = 0;
+
+void initSimple (char* filename) {
+	// do something with filename
+
+	// setup array
+	sizeSimple = 2 * WIN_COLS * WIN_ROWS;
+	printf("%d %d %d\n", WIN_COLS, WIN_ROWS, sizeSimple );
+	arraySimple = malloc (2 * WIN_COLS * WIN_ROWS * sizeof(char));
+
+}
+
+void setCharSimple (char c, long row, long col) {
+	arraySimple[row * WIN_COLS + col] = c;
+}
+
+//slide right
+// temp = *current
+//repeat: until end of array or null char?
+// current++
+// temp2 = *current
+// *current = temp
+// temp = temp2
+
+void destroySimple () {
+	printf("%s\n", arraySimple);
+	free (arraySimple);
+}
+
 // void addLine (struct node*, struct line*);
 void addLine (long, struct line*);
 void shiftUp (long);

@@ -7,14 +7,20 @@ struct node* bottomNode;
 struct line* *array;
 long maxArraySize, arraySize;
 
+FILE* openFile;
 
 char* arraySimple;
 long sizeSimple = 0;
 long displacedSimple = 0;
 
+
 void initSimple (char* filename) {
 	// do something with filename
+	openFile = fopen (filename, "w+");
 
+	if (openFile == NULL) {
+		printf ("FAIL");
+	}
 	// setup array
 	sizeSimple = 2 * WIN_COLS * WIN_ROWS;
 	printf("%d %d %d\n", WIN_COLS, WIN_ROWS, sizeSimple );
@@ -24,6 +30,8 @@ void initSimple (char* filename) {
 
 void setCharSimple (char c, long row, long col) {
 	arraySimple[row * WIN_COLS + col] = c;
+	fseek (openFile, row * WIN_COLS + col, displacedSimple);
+	fputc (c, openFile);
 }
 
 //slide right
@@ -35,6 +43,9 @@ void setCharSimple (char c, long row, long col) {
 // temp = temp2
 
 void destroySimple () {
+	fseek (openFile, 0, SEEK_END);
+	fputc ('\n', openFile);
+	fclose (openFile);
 	printf("%s\n", arraySimple);
 	free (arraySimple);
 }

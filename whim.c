@@ -79,7 +79,12 @@ int main(int argc, char const *argv[])
 	int d;
 	WINDOW *wnd;
 
-	initSimple (" ");
+	if (argc == 2) {
+		initSimple (argv[1]);
+	} else {
+		initSimple ("will.txt");
+	}
+
 	wnd = initscr(); //curses > init window
 	cbreak(); //curses > raw mode (chars sent to program)
 	noecho(); //curses > no echoing

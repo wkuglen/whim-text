@@ -44,6 +44,7 @@ void delete () {
 void carriageReturn () {
 	if (r > nrows) beep();
 	addch ('\n');//delch(); insch ('\n');
+	setCharSimple(0x0a, r, c);
 	r++;
 	c = 0;
 	move (r, c);
@@ -89,11 +90,15 @@ int main(int argc, char const *argv[])
 	cbreak(); //curses > raw mode (chars sent to program)
 	noecho(); //curses > no echoing
 	getmaxyx(wnd, nrows, ncols); //curses > get size of window
+	if (ncols > MAX_WIN_COL) ncols = MAX_WIN_COL;
 	clear (); //curses > clear screen
 	refresh ();
 	keypad (wnd, TRUE);
 
+	readDumpIn ();
 	r = 0; c = 0;
+	move(r, c);
+	refresh();
 	while (1) {
 		d = getch (); //curses > input from keyboard
 		if (d == '\x1b') break;

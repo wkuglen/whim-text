@@ -26,9 +26,14 @@ struct node
 	struct node* previous;
 };
 
+
+// defined in whim.c
+void moveBy (int, int);
+
 // defined in manager.c
 void initSimple (char* filename);
 void setCharSimple (char, long, long);
 void destroySimple ();
+void readDumpIn ();
 
 void init(char* filename);

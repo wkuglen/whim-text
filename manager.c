@@ -14,9 +14,29 @@ long sizeSimple = 0;
 long displacedSimple = 0;
 
 
+int test () {
+	int c;
+	int out = 0;
+	while ((c = fgetc(openFile)) != EOF)
+	{
+		printf ("%x ", c);
+  		out++;
+	}
+	if (feof(openFile))
+	{
+	  // hit end of file
+		perror ("eof");
+		return out;
+	}
+	else
+	{
+	  // some other error interrupted the read
+		return -1;
+	}
+}
 void initSimple (char* filename) {
 	// do something with filename
-	openFile = fopen (filename, "w+");
+	openFile = fopen (filename, "r+");
 
 	if (openFile == NULL) {
 		printf ("FAIL");
@@ -26,6 +46,33 @@ void initSimple (char* filename) {
 	printf("%d %d %d\n", WIN_COLS, WIN_ROWS, sizeSimple );
 	arraySimple = malloc (2 * WIN_COLS * WIN_ROWS * sizeof(char));
 
+	test();
+	//fseek (openFile, 0, 0);
+	//printf ("%d\n", test());//fread (arraySimple, sizeof(char), sizeof(arraySimple), openFile));
+	//if (feof(openFile)) perror ("eof");
+	//if (ferror(openFile)) perror("error");
+}
+
+void readDumpIn () {
+	int c;
+	int out = 0;
+
+	fseek (openFile, 0, 0);
+	while ((c = fgetc(openFile)) != EOF)
+	{
+		//printf ("%c", c);
+		arraySimple[out] = c;
+		addch(c);
+  		out++;
+	}
+
+	// size_t bytesRead = fread (arraySimple, sizeof(char), sizeSimple, openFile);
+	// for (int i = 0; i < bytesRead; ++i)
+	// {
+	// 	addch(arraySimple[i]);
+	// 	moveBy (0, 1);
+	// }
+	refresh ();
 }
 
 void setCharSimple (char c, long row, long col) {

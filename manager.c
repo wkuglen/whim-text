@@ -34,19 +34,31 @@ int test () {
 		return -1;
 	}
 }
-void initSimple (char* filename) {
+bool initSimple (char* filename) {
 	// do something with filename
 	openFile = fopen (filename, "r+");
 
 	if (openFile == NULL) {
-		printf ("FAIL");
+		openFile = fopen (filename, "w+");
+		if (openFile == NULL) {
+			printf ("FAIL: %s cannot be found or created.\n", filename);
+			return false;
+		} else {
+			fclose (openFile);
+			openFile = fopen (filename, "r+");
+			if (openFile == NULL) {
+				printf("FAIL: There was a problem in creating %s\n", filename);
+				return false;
+			}
+		}
 	}
 	// setup array
 	sizeSimple = 2 * WIN_COLS * WIN_ROWS;
-	printf("%d %d %d\n", WIN_COLS, WIN_ROWS, sizeSimple );
+	// printf("%d %d %d\n", WIN_COLS, WIN_ROWS, sizeSimple );
 	arraySimple = malloc (2 * WIN_COLS * WIN_ROWS * sizeof(char));
 
 	test();
+	return true;
 	//fseek (openFile, 0, 0);
 	//printf ("%d\n", test());//fread (arraySimple, sizeof(char), sizeof(arraySimple), openFile));
 	//if (feof(openFile)) perror ("eof");
@@ -79,6 +91,10 @@ void setCharSimple (char c, long row, long col) {
 	arraySimple[row * WIN_COLS + col] = c;
 	fseek (openFile, row * WIN_COLS + col, displacedSimple);
 	fputc (c, openFile);
+}
+
+char getCharSimple (long row, long col) {
+	return arraySimple[row * WIN_COLS + col];
 }
 
 //slide right

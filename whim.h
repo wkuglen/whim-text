@@ -28,11 +28,12 @@ struct node
 
 
 // defined in whim.c
-void moveBy (int, int);
+void moveBy (WINDOW*, int, int);
 
 // defined in manager.c
-void initSimple (char* filename);
+bool initSimple (char* filename);
 void setCharSimple (char, long, long);
+char getCharSimple (long, long);
 void destroySimple ();
 void readDumpIn ();
 

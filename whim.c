@@ -52,7 +52,8 @@ void carriageReturn () {
 
 }
 
-void moveBy (int rows, int cols) {
+void moveBy (WINDOW *wnd, int rows, int cols) {
+	//keypad (wnd, FALSE);
 	if (r+rows > nrows)
 		r = nrows;
 	else if (r+rows < 0)
@@ -68,7 +69,18 @@ void moveBy (int rows, int cols) {
 		c += cols;
 
 	move (r, c);
+
+	// char s = getCharSimple (r, c);
+	// if (s < 32)
+	// 	moveBy (wnd, 0, -1);
+	
+	// move (80, 80);
+
+	// printw("%x", s);
+	// refresh ();
+	// move (r, c);
 	refresh ();
+	//keypad (wnd, TRUE);
 }
 
 
@@ -103,11 +115,11 @@ int main(int argc, char const *argv[])
 		d = getch (); //curses > input from keyboard
 		if (d == '\x1b') break;
 		switch (d) {
-			case KEY_DOWN: moveBy (1, 0); break;
-			case KEY_UP: moveBy (-1, 0); break;
-			case KEY_LEFT: moveBy (0, -1); break;
-			case KEY_RIGHT: moveBy (0, 1); break;
-			case KEY_SLEFT: moveBy (0, -ncols); break;
+			case KEY_DOWN: moveBy (wnd, 1, 0); break;
+			case KEY_UP: moveBy (wnd, -1, 0); break;
+			case KEY_LEFT: moveBy (wnd, 0, -1); break;
+			case KEY_RIGHT: moveBy (wnd, 0, 1); break;
+			case KEY_SLEFT: moveBy (wnd, 0, -ncols); break;
 			
 			case KEY_ENTER:
 			case 13:

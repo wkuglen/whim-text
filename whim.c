@@ -15,7 +15,7 @@ void draw (int d) {
 	move (r,c);
 	addch(d); //delch (); insch (d);
 	
-	setCharSimple (d, r, c);
+	// setCharSimple (d, r, c);
 	c++;
 	if (c == ncols) {
 		c = 0;
@@ -93,9 +93,9 @@ int main(int argc, char const *argv[])
 	WINDOW *wnd;
 
 	if (argc == 2) {
-		initSimple (argv[1]);
+		init (argv[1]);
 	} else {
-		initSimple ("will.txt");
+		init ("will.txt");
 	}
 
 	wnd = initscr(); //curses > init window
@@ -107,7 +107,7 @@ int main(int argc, char const *argv[])
 	refresh ();
 	keypad (wnd, TRUE);
 
-	readDumpIn ();
+	// readDumpIn ();
 	r = 0; c = 0;
 	move(r, c);
 	refresh();
@@ -151,6 +151,6 @@ int main(int argc, char const *argv[])
 	}
 
 	endwin();
-	destroySimple();
+	// destroySimple();
 	return 0;
 }

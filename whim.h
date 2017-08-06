@@ -13,10 +13,13 @@ static int WIN_COLS = 80;
 
 struct line
 {
-	long segment_number;
+	// long segment_number;
 	char* string;
-	bool dirty_bit;
-	bool has_endline;
+	int allocated;
+	int last_char;
+	//bool dirty_bit;
+	//bool has_endline;
+
 };
 
 struct node
@@ -37,4 +40,5 @@ char getCharSimple (long, long);
 void destroySimple ();
 void readDumpIn ();
 
-void init(char* filename);
+bool init(char* filename);
+void addChar (char, struct line*, int);

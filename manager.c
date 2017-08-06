@@ -114,27 +114,113 @@ void destroySimple () {
 }
 
 // void addLine (struct node*, struct line*);
+bool fileToLine (struct line* newline);
+void reallocate (struct line*);
 void addLine (long, struct line*);
 void shiftUp (long);
 void shiftDown (long);
 
-void init (char* filename) {
+
+/*
+ * Writing into memory/disk:
+ *  As things are pushed off the top write them to temp.
+    then you continue to write in order.
+ *  As things are pushed off the bottom, goto eof then find first
+    \n that is not immediately ahead of eof. Write the last line 
+    to a seperate temp but backwards. read into save file backwards 
+    as well
+ *  Have a recovery file that is fully updated for every 30 lines 
+    that are pushed off
+ */
+
+bool init (char* filename) {
 	//do something with filename
 
+	openFile = fopen (filename, "r+");
+
+	if (openFile == NULL) {
+		openFile = fopen (filename, "w+");
+		if (openFile == NULL) {
+			printf ("FAIL: %s cannot be found or created.\n", filename);
+			return false;
+		} else {
+			fclose (openFile);
+			openFile = fopen (filename, "r+");
+			if (openFile == NULL) {
+				printf("FAIL: There was a problem in creating %s\n", filename);
+				return false;
+			}
+		}
+	}
 	//set up linked list
 	//list = topNode = bottomNode = NULL;
 	//read line by line
+	printf("file opened.\n");
 	array = malloc (2 * WIN_ROWS * sizeof(struct line*));
 	maxArraySize = 2 * WIN_ROWS;
 
 	int lineCount = 0;
-	while (lineCount < maxArraySize) {
-		struct line* nextLine = malloc (sizeof (struct line));
-		addLine (lineCount, nextLine);
+	bool notEOF = true;
+	while ((lineCount < maxArraySize) && (notEOF)) {
+		struct line* nextLine = malloc (sizeof (struct line*));
+		printf("nextline ");
+		notEOF = fileToLine (nextLine);
+		array[lineCount] = nextLine;// addLine (lineCount, nextLine);
 		++lineCount;
 	}
+	return true;
 }
 
+bool fileToLine (struct line* newline) {
+	char c;
+	int i = 0;
+	
+	// newline = malloc (sizeof (struct line*));
+	newline->string = malloc (80 * sizeof (char));
+	newline->allocated = 80;
+	newline->last_char = 0;
+
+	while ((c = fgetc(openFile)) != EOF)
+	{
+		newline->string[i] = c;
+		// addch(c);
+		if(c == '\n')
+			break;
+  		i++;
+  		newline->last_char++;
+  		if (i >= ((float)newline->allocated) * 0.75)
+  			reallocate (newline);
+	}
+	if (feof(openFile))
+		return false;
+	return true;
+}
+
+void addChar (char c, struct line* line, int position) {
+	//check position validity
+
+	int i;
+	for (int i = line->last_char + 1; i > position; --i)
+	{
+		line->string[i] = line->string[i - 1];
+	}
+	line->string[position] = c;
+	line->last_char++;
+	if (line->last_char >= ((float) line->allocated) * 3 / 4)
+		reallocate (line);
+
+}
+
+void reallocate (struct line* l) {
+	char* newAllocation = malloc (2 * l->allocated);
+	for (int i = 0; i <= l->last_char; ++i)
+	{
+		newAllocation[i] = l->string[i];
+	}
+	free (l->string);
+	l->string = newAllocation;
+	l->allocated = 2 * l->allocated;
+}
 // void addLine (struct node* above, struct line* nextLine) {
 // 	struct node* insert = malloc (sizeof (struct node));
 // 	insert->data = nextLine;
@@ -158,6 +244,7 @@ void init (char* filename) {
 // }
 
 void addLine (long insertAt, struct line* nextLine) {
+	printf ("addline");
 	if (insertAt == maxArraySize) {
 		//shift up
 		shiftUp (insertAt - 1);
@@ -197,8 +284,8 @@ void shiftUp (long exclusiveStart) {
 			array[i] = array[i + 1];
 		}
 	}
-
-	free (top);
+	if (top != NULL)
+		free (top);
 }
 
 
@@ -218,8 +305,8 @@ void shiftDown (long exclusiveStart) {
 			array[i] = array[i - 1];
 		}
 	}
-
-	free (bottom);
+	if (bottom != NULL)
+		free (bottom);
 }
 
 

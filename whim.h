@@ -40,5 +40,12 @@ char getCharSimple (long, long);
 void destroySimple ();
 void readDumpIn ();
 
-bool init(char* filename);
+
+static int firstLineDisplayed = 0;
+static int firstLineOffset = 0;
+static int lastLineDisplayed = 0;
+static int lastLineCutoff = 0;
+
+bool init (char* filename);
+void setChar (char, struct line*, int);
 void addChar (char, struct line*, int);

@@ -56,8 +56,9 @@ void moveBy (WINDOW *wnd, int rows, int cols) {
 	//keypad (wnd, FALSE);
 	if (r+rows > nrows)
 		r = nrows;
-	else if (r+rows < 0)
+	else if (r+rows < 0) {
 		r = 0;
+		scrl(-1); }
 	else 
 		r += rows;
 
@@ -92,22 +93,28 @@ int main(int argc, char const *argv[])
 	int d;
 	WINDOW *wnd;
 
-	if (argc == 2) {
-		init (argv[1]);
-	} else {
-		init ("will.txt");
-	}
+	// if (argc == 2) {
+	// 	init (argv[1]);
+	// } else {
+	// 	init ("will.txt");
+	// }
 
 	wnd = initscr(); //curses > init window
 	cbreak(); //curses > raw mode (chars sent to program)
 	noecho(); //curses > no echoing
 	getmaxyx(wnd, nrows, ncols); //curses > get size of window
 	if (ncols > MAX_WIN_COL) ncols = MAX_WIN_COL;
+	scrollok (wnd, TRUE);
 	clear (); //curses > clear screen
 	refresh ();
 	keypad (wnd, TRUE);
 
 	// readDumpIn ();
+	if (argc == 2) {
+		init (argv[1]);
+	} else {
+		init ("will.txt");
+	}
 	r = 0; c = 0;
 	move(r, c);
 	refresh();

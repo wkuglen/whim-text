@@ -133,6 +133,7 @@ void shiftDown (long);
     that are pushed off
  */
 
+
 bool init (char* filename) {
 	//do something with filename
 
@@ -155,15 +156,15 @@ bool init (char* filename) {
 	//set up linked list
 	//list = topNode = bottomNode = NULL;
 	//read line by line
-	printf("file opened.\n");
+	// printf("file opened.\n");
 	array = malloc (2 * WIN_ROWS * sizeof(struct line*));
 	maxArraySize = 2 * WIN_ROWS;
 
 	int lineCount = 0;
 	bool notEOF = true;
 	while ((lineCount < maxArraySize) && (notEOF)) {
-		struct line* nextLine = malloc (sizeof (struct line*));
-		printf("nextline ");
+		struct line* nextLine = malloc (sizeof (struct line));
+		// printf("nextline ");
 		notEOF = fileToLine (nextLine);
 		array[lineCount] = nextLine;// addLine (lineCount, nextLine);
 		++lineCount;
@@ -183,7 +184,7 @@ bool fileToLine (struct line* newline) {
 	while ((c = fgetc(openFile)) != EOF)
 	{
 		newline->string[i] = c;
-		// addch(c);
+		addch(c);
 		if(c == '\n')
 			break;
   		i++;
@@ -196,8 +197,23 @@ bool fileToLine (struct line* newline) {
 	return true;
 }
 
+//Replace a char
+void setChar (char c, struct line* line, int position) {
+	if (c == '\n') { /* do something */}
+
+	if (position > line->last_char)
+		return;
+
+	line->string[position] = c;
+}
+
+//Add or insert a char
 void addChar (char c, struct line* line, int position) {
 	//check position validity
+	if (c == '\n') { /* do something */}
+
+	if (position > line->last_char+1)
+		position = line->last_char+1;
 
 	int i;
 	for (int i = line->last_char + 1; i > position; --i)
@@ -309,4 +325,30 @@ void shiftDown (long exclusiveStart) {
 		free (bottom);
 }
 
+void scrollUp () {
+	if (firstLineDisplayed == 0 && firstLineOffset == 0) {
+		//either top of array or top of file
+		//need a first line loaded and last line loaded variable
+		// if top of array
+		//   shiftDown
+		// if top of file
+		//   beep() & STOP
+	} else if (firstLineDisplayed == 0 && firstLineOffset != 0) {
+		// calculate new offset (must be >= 0);
+		// add characters to line from offset to offset + WIN_COLS
+	} else if (firstLineOffset != 0) {
+		// calculate new offset (must be >= 0);
+		// add characters to line from offset to offset + WIN_COLS
+	} else {
+		// firstLineDisplayed--
+		//if last_char > WIN_COLS 
+		// add characters to line from last_char - last_char%WIN_COLS to last_char
+		// set offset to last_char - last_char%WIN_COLS
+		//else
+		// add characters from line
+	}
 
+	//now adjust last line numbers
+	//if lastLineCutoff = 0, lastLineDisplayed--
+	//Cutoff -= WIN_COLS (must be >= 0)
+}

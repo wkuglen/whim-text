@@ -169,8 +169,25 @@ bool init (char* filename) {
 		array[lineCount] = nextLine;// addLine (lineCount, nextLine);
 		++lineCount;
 	}
+
+	int totalLines = lineCount;
+	int i = 0;
+	lineCount = 1;
+	while (lineCount < WIN_COLS && i < totalLines)
+	{
+		int length = strlen (array[i]->string);
+		mvaddnstr (lineCount, 0, array[i]->string, (WIN_COLS - lineCount)*80);
+		lineCount += (length / WIN_COLS);
+		if (length % WIN_COLS != 0)
+			lineCount++;
+		i++;
+	}
+
+	lastLineDisplayed = i - 1;
 	return true;
 }
+
+//
 
 bool fileToLine (struct line* newline) {
 	char c;
@@ -326,6 +343,7 @@ void shiftDown (long exclusiveStart) {
 }
 
 void scrollUp () {
+	scrl (-1);
 	if (firstLineDisplayed == 0 && firstLineOffset == 0) {
 		//either top of array or top of file
 		//need a first line loaded and last line loaded variable
@@ -333,9 +351,15 @@ void scrollUp () {
 		//   shiftDown
 		// if top of file
 		//   beep() & STOP
+		scrl(1);
+		beep ();
 	} else if (firstLineDisplayed == 0 && firstLineOffset != 0) {
 		// calculate new offset (must be >= 0);
+		firstLineOffset -= 80;
+		if (firstLineOffset < 0) firstLineOffset = 0;
+
 		// add characters to line from offset to offset + WIN_COLS
+		addstr (&(array[0]->string[firstLineOffset]));
 	} else if (firstLineOffset != 0) {
 		// calculate new offset (must be >= 0);
 		// add characters to line from offset to offset + WIN_COLS

@@ -58,7 +58,7 @@ void moveBy (WINDOW *wnd, int rows, int cols) {
 		r = nrows;
 	else if (r+rows < 0) {
 		r = 0;
-		scrl(-1); }
+		scrollUp ();}
 	else 
 		r += rows;
 
@@ -104,6 +104,8 @@ int main(int argc, char const *argv[])
 	noecho(); //curses > no echoing
 	getmaxyx(wnd, nrows, ncols); //curses > get size of window
 	if (ncols > MAX_WIN_COL) ncols = MAX_WIN_COL;
+	WIN_ROWS = nrows;
+	WIN_COLS = ncols;
 	scrollok (wnd, TRUE);
 	clear (); //curses > clear screen
 	refresh ();

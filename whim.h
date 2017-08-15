@@ -49,3 +49,5 @@ static int lastLineCutoff = 0;
 bool init (char* filename);
 void setChar (char, struct line*, int);
 void addChar (char, struct line*, int);
+
+void scrollUp ();

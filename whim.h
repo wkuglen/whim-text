@@ -7,8 +7,8 @@
 #define MAX_WIN_COL 80
 #endif
 
-static int WIN_ROWS = 80;
-static int WIN_COLS = 80;
+extern int WIN_ROWS;
+extern int WIN_COLS;// = 80;
 
 
 struct line

@@ -13,6 +13,8 @@ char* arraySimple;
 long sizeSimple = 0;
 long displacedSimple = 0;
 
+// extern int WIN_ROWS;
+// extern int WIN_COLS;
 
 int test () {
 	int c;
@@ -172,15 +174,37 @@ bool init (char* filename) {
 
 	int totalLines = lineCount;
 	int i = 0;
-	lineCount = 1;
-	while (lineCount < WIN_COLS && i < totalLines)
+	// lineCount = 0;
+	// while (lineCount < WIN_COLS && i < totalLines)
+	// {
+	// 	int length = strlen (array[i]->string);
+	// 	mvaddnstr (lineCount, 0, array[i]->string, (WIN_ROWS - lineCount)*WIN_COLS);
+	// 	lineCount += (int) (length / WIN_COLS);
+	// 	if (length % WIN_COLS != 0)
+	// 		lineCount++;
+	// 	i++;
+	// }
+
+	//offset = 0
+	//line = 0
+	//for every row
+	// mvaddnstr (i, 0, array[line]->string[offset], WIN_COLS)
+	// if strlen (array[line]->string[offset]) > WIN_COLS
+	//		offset += win_cols
+	// else
+	// 		line++;
+	//		offset = 0;
+	int offset = 0;
+	lineCount = 0;
+	for (i = 0; i < WIN_ROWS && i < totalLines; i++)
 	{
-		int length = strlen (array[i]->string);
-		mvaddnstr (lineCount, 0, array[i]->string, (WIN_COLS - lineCount)*80);
-		lineCount += (length / WIN_COLS);
-		if (length % WIN_COLS != 0)
+		mvaddnstr (i, 0, &array[lineCount]->string[offset], WIN_COLS);
+		if (strlen (&array[lineCount]->string[offset]) > WIN_COLS)
+			offset += WIN_COLS;
+		else {
 			lineCount++;
-		i++;
+			offset = 0;
+		}
 	}
 
 	lastLineDisplayed = i - 1;
@@ -196,12 +220,12 @@ bool fileToLine (struct line* newline) {
 	// newline = malloc (sizeof (struct line*));
 	newline->string = malloc (80 * sizeof (char));
 	newline->allocated = 80;
-	newline->last_char = 0;
+	newline->last_char = -1;
 
 	while ((c = fgetc(openFile)) != EOF)
 	{
 		newline->string[i] = c;
-		addch(c);
+		//addch(c);
 		if(c == '\n')
 			break;
   		i++;
@@ -343,7 +367,6 @@ void shiftDown (long exclusiveStart) {
 }
 
 void scrollUp () {
-	scrl (-1);
 	if (firstLineDisplayed == 0 && firstLineOffset == 0) {
 		//either top of array or top of file
 		//need a first line loaded and last line loaded variable
@@ -351,9 +374,9 @@ void scrollUp () {
 		//   shiftDown
 		// if top of file
 		//   beep() & STOP
-		scrl(1);
 		beep ();
 	} else if (firstLineDisplayed == 0 && firstLineOffset != 0) {
+		scrl (-1);
 		// calculate new offset (must be >= 0);
 		firstLineOffset -= 80;
 		if (firstLineOffset < 0) firstLineOffset = 0;
@@ -361,10 +384,18 @@ void scrollUp () {
 		// add characters to line from offset to offset + WIN_COLS
 		addstr (&(array[0]->string[firstLineOffset]));
 	} else if (firstLineOffset != 0) {
+		scrl (-1);
 		// calculate new offset (must be >= 0);
 		// add characters to line from offset to offset + WIN_COLS
+		firstLineOffset -= 80;
+		if (firstLineOffset < 0) firstLineOffset = 0;
+
+		// add characters to line from offset to offset + WIN_COLS
+		addstr (&(array[0]->string[firstLineOffset]));
 	} else {
+		scrl (-1);
 		// firstLineDisplayed--
+		firstLineDisplayed--;
 		//if last_char > WIN_COLS 
 		// add characters to line from last_char - last_char%WIN_COLS to last_char
 		// set offset to last_char - last_char%WIN_COLS

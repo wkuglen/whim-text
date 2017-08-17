@@ -6,6 +6,9 @@
 int r, c, nrows, ncols;
 bool replace;
 
+int WIN_ROWS;
+int WIN_COLS;
+
 //void insert_mode ();
 //printf "\x1b[1J \x1b[H"; sleep 2; 
 //printf "So this is how it begins...\n"; sleep 2; 
@@ -62,8 +65,8 @@ void moveBy (WINDOW *wnd, int rows, int cols) {
 	else 
 		r += rows;
 
-	if (c+cols > ncols)
-		c = ncols;
+	if (c+cols >= ncols)
+		c = ncols - 1;
 	else if (c+cols < 0)
 		c = 0;
 	else
@@ -103,7 +106,7 @@ int main(int argc, char const *argv[])
 	cbreak(); //curses > raw mode (chars sent to program)
 	noecho(); //curses > no echoing
 	getmaxyx(wnd, nrows, ncols); //curses > get size of window
-	if (ncols > MAX_WIN_COL) ncols = MAX_WIN_COL;
+	//if (ncols > MAX_WIN_COL) ncols = MAX_WIN_COL;
 	WIN_ROWS = nrows;
 	WIN_COLS = ncols;
 	scrollok (wnd, TRUE);
@@ -157,9 +160,14 @@ int main(int argc, char const *argv[])
 		// 	// else if (d == 127 || d == 8) delete();
 		// 	else draw (d);
 		// }
+
+		mvprintw (nrows-1, 0,"(%d, %d)", r, c);
+		move (r, c);
+		refresh ();
 	}
 
 	endwin();
+	printf("%d, %d, %d, %d\n", WIN_ROWS, WIN_COLS, (int) 87 / WIN_COLS, 87 % WIN_COLS);
 	// destroySimple();
 	return 0;
 }

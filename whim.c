@@ -57,8 +57,9 @@ void carriageReturn () {
 
 void moveBy (WINDOW *wnd, int rows, int cols) {
 	//keypad (wnd, FALSE);
-	if (r+rows > nrows)
-		r = nrows;
+	if (r+rows > nrows - 2) {
+		r = nrows - 2;
+		scrollDown (); }
 	else if (r+rows < 0) {
 		r = 0;
 		scrollUp ();}
@@ -95,6 +96,7 @@ int main(int argc, char const *argv[])
 	int i;
 	int d;
 	WINDOW *wnd;
+	WINDOW *statusBar;
 
 	// if (argc == 2) {
 	// 	init (argv[1]);
@@ -109,6 +111,7 @@ int main(int argc, char const *argv[])
 	//if (ncols > MAX_WIN_COL) ncols = MAX_WIN_COL;
 	WIN_ROWS = nrows;
 	WIN_COLS = ncols;
+	statusBar = newwin (1, ncols, nrows - 1, 0);
 	scrollok (wnd, TRUE);
 	clear (); //curses > clear screen
 	refresh ();
@@ -161,13 +164,17 @@ int main(int argc, char const *argv[])
 		// 	else draw (d);
 		// }
 
-		mvprintw (nrows-1, 0,"(%d, %d)", r, c);
+		mvwprintw (statusBar, 0, 0, "(%d, %d) {[%d, %d] [%d, %d]}", r, c, 
+			firstLineDisplayed, firstLineOffset, lastLineDisplayed, lastLineCutoff);
+		wrefresh (statusBar);
 		move (r, c);
 		refresh ();
+
 	}
 
 	endwin();
-	printf("%d, %d, %d, %d\n", WIN_ROWS, WIN_COLS, (int) 87 / WIN_COLS, 87 % WIN_COLS);
+	endwin();
+	printf("%d, %d\n", WIN_ROWS, WIN_COLS);
 	// destroySimple();
 	return 0;
 }

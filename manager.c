@@ -16,6 +16,11 @@ long displacedSimple = 0;
 // extern int WIN_ROWS;
 // extern int WIN_COLS;
 
+int firstLineDisplayed;
+int firstLineOffset;
+int lastLineDisplayed;
+int lastLineCutoff;
+
 int test () {
 	int c;
 	int out = 0;
@@ -172,6 +177,7 @@ bool init (char* filename) {
 		++lineCount;
 	}
 
+	arraySize = lineCount;
 	int totalLines = lineCount;
 	int i = 0;
 	// lineCount = 0;
@@ -196,7 +202,7 @@ bool init (char* filename) {
 	//		offset = 0;
 	int offset = 0;
 	lineCount = 0;
-	for (i = 0; i < WIN_ROWS && i < totalLines; i++)
+	for (i = 1; i < WIN_ROWS && i < totalLines; i++)
 	{
 		mvaddnstr (i, 0, &array[lineCount]->string[offset], WIN_COLS);
 		if (strlen (&array[lineCount]->string[offset]) > WIN_COLS)
@@ -205,9 +211,17 @@ bool init (char* filename) {
 			lineCount++;
 			offset = 0;
 		}
+		refresh();
 	}
 
-	lastLineDisplayed = i - 1;
+	if (offset <= 0) {
+		lastLineDisplayed = lineCount - 1;
+		lastLineCutoff = array[lineCount - 1]->last_char;
+	} else {
+		lastLineDisplayed = lineCount;
+		lastLineCutoff = offset;
+	}
+
 	return true;
 }
 
@@ -226,8 +240,10 @@ bool fileToLine (struct line* newline) {
 	{
 		newline->string[i] = c;
 		//addch(c);
-		if(c == '\n')
+		if(c == '\n') {
+			newline->last_char++;
 			break;
+		}
   		i++;
   		newline->last_char++;
   		if (i >= ((float)newline->allocated) * 0.75)
@@ -375,35 +391,80 @@ void scrollUp () {
 		// if top of file
 		//   beep() & STOP
 		beep ();
-	} else if (firstLineDisplayed == 0 && firstLineOffset != 0) {
-		scrl (-1);
-		// calculate new offset (must be >= 0);
-		firstLineOffset -= 80;
-		if (firstLineOffset < 0) firstLineOffset = 0;
-
-		// add characters to line from offset to offset + WIN_COLS
-		addstr (&(array[0]->string[firstLineOffset]));
-	} else if (firstLineOffset != 0) {
-		scrl (-1);
-		// calculate new offset (must be >= 0);
-		// add characters to line from offset to offset + WIN_COLS
-		firstLineOffset -= 80;
-		if (firstLineOffset < 0) firstLineOffset = 0;
-
-		// add characters to line from offset to offset + WIN_COLS
-		addstr (&(array[0]->string[firstLineOffset]));
 	} else {
-		scrl (-1);
-		// firstLineDisplayed--
-		firstLineDisplayed--;
-		//if last_char > WIN_COLS 
-		// add characters to line from last_char - last_char%WIN_COLS to last_char
-		// set offset to last_char - last_char%WIN_COLS
-		//else
-		// add characters from line
-	}
+		if (firstLineDisplayed == 0 && firstLineOffset != 0) {
+			scrl (-1);
+			// calculate new offset (must be >= 0);
+			firstLineOffset -= WIN_COLS;
+			if (firstLineOffset < 0) firstLineOffset = 0;
 
-	//now adjust last line numbers
-	//if lastLineCutoff = 0, lastLineDisplayed--
-	//Cutoff -= WIN_COLS (must be >= 0)
+			// add characters to line from offset to offset + WIN_COLS
+			addstr (&(array[0]->string[firstLineOffset]));
+		} else if (firstLineDisplayed != 0 && firstLineOffset != 0) {
+			scrl (-1);
+			// calculate new offset (must be >= 0);
+			// add characters to line from offset to offset + WIN_COLS
+			firstLineOffset -= WIN_COLS;
+			if (firstLineOffset < 0) firstLineOffset = 0;
+
+			// add characters to line from offset to offset + WIN_COLS
+			addstr (&(array[firstLineDisplayed]->string[firstLineOffset]));
+		} else {
+			scrl (-1);
+			// firstLineDisplayed--
+			firstLineDisplayed--;
+			//if last_char > WIN_COLS 
+			// add characters to line from last_char - last_char%WIN_COLS to last_char
+			// set offset to last_char - last_char%WIN_COLS
+			if (array[firstLineDisplayed]->last_char >= WIN_COLS) {
+				int lc = array[firstLineDisplayed]->last_char;
+				firstLineOffset = lc - (lc % WIN_COLS);
+				addstr (&(array[firstLineDisplayed]->string[firstLineOffset]));
+			} else {
+				//else
+				// add characters from line
+				addstr (array[firstLineDisplayed]->string);
+			}
+		}
+
+		//now adjust last line numbers
+		//if lastLineCutoff = 0, lastLineDisplayed--
+		//Cutoff -= WIN_COLS (must be >= 0)
+
+		if (lastLineCutoff == 0) {
+			lastLineDisplayed--;
+		}
+		lastLineCutoff -= WIN_COLS;
+		if (lastLineCutoff < 0) lastLineCutoff = 0;
+		refresh ();
+	}
+}
+
+
+void scrollDown () {
+	if (lastLineDisplayed >= arraySize -1 && lastLineCutoff >= array[lastLineDisplayed]->last_char) {
+		beep();
+	} else {
+		scrl (1);
+		if (lastLineDisplayed == arraySize-1 && lastLineCutoff < array[lastLineDisplayed]->last_char) {
+			mvaddstr (WIN_ROWS-2, 0, &(array[lastLineDisplayed]->string[lastLineCutoff]));
+			lastLineCutoff += WIN_COLS;
+		} else if (lastLineCutoff >= array[lastLineDisplayed]->last_char) {
+			lastLineDisplayed++;
+			lastLineCutoff = WIN_COLS;
+			mvaddstr (WIN_ROWS-2, 0, array[lastLineDisplayed]->string);
+		} else {
+			mvaddstr (WIN_ROWS-2, 0, &(array[lastLineDisplayed]->string[lastLineCutoff]));
+			lastLineCutoff += WIN_COLS;
+		}
+
+		if (array[firstLineDisplayed]->last_char - firstLineOffset < WIN_COLS) {
+			firstLineDisplayed++;
+			firstLineOffset = 0;
+		} else {
+			firstLineOffset += WIN_COLS;
+		}
+		refresh ();
+
+	}
 }

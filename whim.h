@@ -41,13 +41,14 @@ void destroySimple ();
 void readDumpIn ();
 
 
-static int firstLineDisplayed = 0;
-static int firstLineOffset = 0;
-static int lastLineDisplayed = 0;
-static int lastLineCutoff = 0;
+extern int firstLineDisplayed;
+extern int firstLineOffset;
+extern int lastLineDisplayed;
+extern int lastLineCutoff;
 
 bool init (char* filename);
 void setChar (char, struct line*, int);
 void addChar (char, struct line*, int);
 
 void scrollUp ();
+void scrollDown ();
